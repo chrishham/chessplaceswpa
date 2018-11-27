@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+  <meta name="viewport" content="width=device-width, user-scalable=no" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="shortcut icon" type="image/ico" href="/favicon.ico"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/vue2-leaflet@1.0.1/dist/vue2-leaflet.js"></script>
+  <title>Chess Places</title>
+</head>
+
+<body>
+  <div id="app">
+    <transition name="modal" v-if="showModal">
+      <div class="modal-mask">
+        <div class="modal-wrapper">
+          <div class="modal-container">
+            <div class="modal-header">
+              <slot name="header">
+                Επεξεργασία νέου σημείου
+              </slot>
+            </div>
+            <div class="modal-body">
+              <slot name="body">
+                <b>Ονομασία :</b> <input type="text" v-model="markerToEdit.title"><br>
+                <b>Διεύθυνση :</b> <input type="text" v-model="markerToEdit.address"><br>
+                <b>Περιγραφή :</b> <textarea name="" id="" cols="20" rows="4" v-model="markerToEdit.description"></textarea><br>
+                <b>Url φωτογραφίας :</b><input type="text" v-model="markerToEdit.img"><br>
+                <br>
+              </slot>
+            </div>
+            <div class="modal-footer">
+              <slot name="footer">
+                <!-- <button class="btn btn-info" @click="deleteReport" v-if="user.role !=='user'">
+                  Διαγραφή αναφοράς
+                </button> -->
+                <button class="btn btn-primary" @click="insertNewMarker">
+                  Αποθήκευση αλλαγών
+                </button>
+                <button class="btn btn-danger" @click="showModal=false;hideNewMarker()">
+                  Ακύρωση αλλαγών
+                </button>
+              </slot>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+    <l-map ref="map" :zoom="zoom" :center="center" @zoom="zoom = $event.target._zoom">
+      <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+      <l-marker v-if="userHasLocation" :lat-lng="userMarker.latLng" :icon="userMarker.icon">
+        <l-popup>
+          <h5>{{userMarker.latLng}}</h5>
+        </l-popup>
+      </l-marker>
+      <l-marker ref="marker" v-for="marker in markers" :lat-lng="latLng(marker.lat,marker.lng)" @click="markerClicked(marker)">
+        <l-popup>
+          <img :src="marker.img" class="popup">
+          <h5>{{marker.title}}</h5>
+          <p>{{marker.address}}</p>
+          <p>{{marker.description}}</p>
+          <i class="fas fa-edit"></i>
+        </l-popup>
+      </l-marker>
+      <l-marker ref="newMarker" :lat-lng="newMarkerLatLng" draggable :icon="userMarker.icon">
+      </l-marker>
+    </l-map>
+
+    <div class="bottom-panel container-fluid">
+      <div class="row align-items-center justify-content-center">
+        <div class="col-md-1 col-sm-3 col-xs-3 logo">
+          <img src="images/Black_knight.JPG">
+        </div>
+        <div class="col-md-3 col-sm-9 col-xs-9 app-title">
+          <h3>{{title}}</h3>
+        </div>
+        <div class="col-md-5 col-sm-9">
+          <div class="row align-items-center justify-content-center">
+            <p>{{markers[activeMarkerIndex].title}} .</p>
+            <p v-if="markers[activeMarkerIndex].distance"> Απόσταση :
+              {{markers[activeMarkerIndex].distance.toFixed(2)}} km</p>
+          </div>
+          <div class="row align-items-center justify-content-center">
+            <button class="left-arrow btn btn-primary" @click="nextPrevMarker('previous')" :disabled="activeMarkerIndex === 0">
+              &lt;Προηγούμενο
+            </button>
+            <button class="right-arrow btn btn-primary" @click="nextPrevMarker('next')" :disabled="activeMarkerIndex === markers.length - 1">
+              Επόμενο&gt;
+            </button></div>
+        </div>
+
+        <div class="col-md-3 col-sm-9">
+          <button v-if="!newMarkerMode" class="btn btn-success" @click="showNewMarker">Νέο σημείο</button>
+          <section v-else>
+            <h6>Νέο σημείο</h6>
+            <button class="btn btn-success" @click="showModal=true">Καταχώριση</button>
+            <button class="btn btn-danger" @click="hideNewMarker">Ακύρωση</button>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="helper.js"></script>
+  <script src="index.js"></script>
+</body>
+
+</html>

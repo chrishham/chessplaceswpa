@@ -1,0 +1,15 @@
+{
+  "name": "ChessPlaces",
+  "short_name": "♞♘♞♘♞♘♞♘",
+  "display": "minimal-ui",
+  "start_url": "/",
+  "theme_color": "#673ab6",
+  "background_color": "#111111",
+  "icons": [
+    {
+      "src": "images/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }
+  ]
+}
