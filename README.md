@@ -1,3 +1,7 @@
+
+https://developers.google.com/web/tools/chrome-devtools/remote-debugging/
+
+
 [First understand how push works](https://developers.google.com/web/fundamentals/push-notifications/how-push-works)
 
 Tested on chrome

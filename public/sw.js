@@ -12,13 +12,6 @@ self.addEventListener('fetch', function(event) {
   );
 });
 
-// self.addEventListener('push', function(event) {
-//   event.waitUntil(
-//     self.registration.showNotification('Got Push?', {
-//       body: 'Push Message received'
-//    }));
-// });
-
 self.addEventListener('push', ev => {
   const data = ev.data.json();
   console.log('Got push', data);
